@@ -1,3 +1,8 @@
+# PlatformIO
 .pio
 
+# Settings
 custom_config.h
+
+# IDE
+.idea

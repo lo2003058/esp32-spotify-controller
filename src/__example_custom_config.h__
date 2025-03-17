@@ -1,0 +1,11 @@
+copy this file to src/custom_config.h and change the values to your own
+
+#pragma once
+
+/***********************config*************************/
+
+#define SPOTIFY_CLIENT_ID     "Your Spotify Client ID"
+#define SPOTIFY_CLIENT_SECRET "Your Spotify Client Secret"
+#define SPOTIFY_REFRESH_TOKEN "Your Spotify Refresh Token"
+
+/***********************config*************************/
