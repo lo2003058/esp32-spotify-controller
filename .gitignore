@@ -6,3 +6,6 @@ custom_config.h
 
 # IDE
 .idea
+
+# fonts data
+.data
