@@ -6,8 +6,6 @@
 extern TFT_eSPI tft;
 extern TFT_eSprite sprite;
 
-void testDrawWiFi();
-
 // Initializes Wi-Fi (tries STA mode; if that fails, starts AP mode)
 void initWiFi();
 

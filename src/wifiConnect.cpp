@@ -115,19 +115,6 @@ bool checkWiFiConnection() {
     return true;
 }
 
-void testDrawWiFi() {
-    sprite.fillSprite(TFT_BLACK);
-
-    sprite.loadFont("Cubic_ecjns_f");
-    sprite.drawString("Hello world", 20, 40, 3);
-    sprite.drawString("唵嘛呢叭咪吽", 20, 100, 3);
-    sprite.drawString("萌え,萌え,キューン", 20, 160, 3);
-    sprite.unloadFont();
-
-    lcd_PushColors(0, 0, 536, 240, (uint16_t *) sprite.getPointer());
-}
-
-
 // Draws the current Wi-Fi status on the TFT display
 void drawWiFiStatusTFT() {
     // Create a sprite the size of the display (adjust resolution as needed)

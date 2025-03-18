@@ -13,6 +13,8 @@ TFT_eSprite sprite = TFT_eSprite(&tft);
 byte brightness[7] = {100, 120, 140, 180, 200, 230, 254};
 
 void setup() {
+    Serial.begin(115200);
+
     if (!SPIFFS.begin()) {
         Serial.println("SPIFFS initialisation failed!");
         while (1) yield(); // Stay here twiddling thumbs waiting
@@ -31,12 +33,10 @@ void setup() {
     // Connect to Wi-Fi using the function from wifiConnect.cpp
     initWiFi();
 
-    delay(2000);
+    delay(1500);
 
     // Initialize Spotify and perform authentication
     initSpotify();
-
-    delay(2000);
 }
 
 void loop() {
@@ -49,4 +49,5 @@ void loop() {
 
     // Call the Spotify handler periodically
     handleSpotify();
+    delay(30);
 }

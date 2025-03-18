@@ -9,3 +9,6 @@ custom_config.h
 
 # fonts data
 /data
+
+# images data
+/images/*
