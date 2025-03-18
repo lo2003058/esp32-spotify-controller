@@ -119,22 +119,23 @@ bool checkWiFiConnection() {
 void drawWiFiStatusTFT() {
     // Create a sprite the size of the display (adjust resolution as needed)
     sprite.fillSprite(TFT_BLACK);
-    sprite.setTextSize(2);
     sprite.setTextColor(TFT_WHITE, TFT_BLACK);
-
+    sprite.setTextSize(2);
     sprite.loadFont("Cubic_ens");
     if (WiFiClass::status() == WL_CONNECTED) {
-        sprite.drawString("SSID: ", 20, 20);
-        sprite.drawString(storedSSID, 80, 20);
-        sprite.drawString("Local IP: ", 20, 100);
-        sprite.drawString(WiFi.localIP().toString(), 110, 100);
+        sprite.drawString("SSID: ", 20, 80);
+        sprite.drawString(storedSSID, 80, 80);
+        sprite.drawString("Local IP: ", 20, 140);
+        sprite.drawString(WiFi.localIP().toString(), 110, 140);
     } else {
-        sprite.drawString("AP IP: ", 20, 20);
-        sprite.drawString(WiFi.softAPIP().toString(), 80, 20);
-        sprite.drawString("SSID: TDisplayS3_Config", 20, 100);
-        sprite.drawString("Password: configpassword", 20, 160);
+        sprite.drawString("AP IP: ", 20, 50);
+        sprite.drawString(WiFi.softAPIP().toString(), 80, 50);
+        sprite.drawString("SSID: TDisplayS3_Config", 20, 110);
+        sprite.drawString("Password: configpassword", 20, 170);
     }
     sprite.unloadFont();
 
     lcd_PushColors(0, 0, 536, 240, (uint16_t *) sprite.getPointer());
+
+    sprite.fillSprite(TFT_BLACK);
 }

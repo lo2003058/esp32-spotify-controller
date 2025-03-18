@@ -46,8 +46,8 @@ void loop() {
         checkWiFiConnection();
         lastCheckTime = currentTime;
     }
-
-    // Call the Spotify handler periodically
-    handleSpotify();
-    delay(30);
+    if (currentTime - lastCheckTime >= 1000) {
+        handleSpotify();
+        lastCheckTime = currentTime;
+    }
 }

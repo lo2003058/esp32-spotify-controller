@@ -4,6 +4,7 @@
 #include <custom_config.h>  // Should define SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REFRESH_TOKEN, TFT_WIDTH, TFT_HEIGHT
 
 
+
 // Global sub-sprite for text drawing (size: 286×240)
 TFT_eSprite textSprite = TFT_eSprite(&tft); // assuming your main display is "tft"
 
@@ -15,51 +16,8 @@ static String lastArtist;
 static String lastTrackName;
 static bool lastStatus;
 
-// Define drawing limits and scrolling parameters
 const int availableWidth = 286; // Text area width (x=0 to 286)
 const int availableHeight = 240; // Text area height (y=0 to 240)
-const int scrollDelay = 100; // Delay in milliseconds between scroll updates
-const int spacing = 20; // Gap between successive copies for smooth scrolling
-
-// Separate timers and offsets for artist and track scrolling
-unsigned long lastScrollTimeArtist = 0;
-unsigned long lastScrollTimeTrack = 0;
-int artistScrollOffset = 0;
-int trackScrollOffset = 0;
-
-/**
- * drawScrollingText - Draws a single line of scrolling text like a news ticker.
- *
- * @param spr            The sprite to draw into.
- * @param text           The text to draw.
- * @param posY           The vertical position to draw the text.
- * @param availableWidth The maximum width allowed for the text.
- * @param scrollOffset   Reference to the current scroll offset (updated by the function).
- * @param lastScrollTime Reference to the last scroll update time.
- */
-void drawScrollingText(TFT_eSprite &spr, const String &text, int posY, int availableWidth, int &scrollOffset,
-                       unsigned long &lastScrollTime) {
-    int16_t textWidth = spr.textWidth(text);
-    if (textWidth > availableWidth) {
-        unsigned long now = millis();
-        if (now - lastScrollTime > scrollDelay) {
-            scrollOffset++;
-            if (scrollOffset > textWidth + spacing) {
-                scrollOffset = 0;
-            }
-            lastScrollTime = now;
-        }
-        int posX = 0 - scrollOffset;
-        spr.drawString(text, posX, posY);
-        // Draw a second copy for seamless scrolling
-        if (posX + textWidth < availableWidth) {
-            spr.drawString(text, posX + textWidth + spacing, posY);
-        }
-    } else {
-        // If the text fits, draw it statically
-        spr.drawString(text, 0, posY);
-    }
-}
 
 void initSpotify() {
     sp.begin();
@@ -73,11 +31,6 @@ void initSpotify() {
     textSprite.createSprite(availableWidth, availableHeight);
 }
 
-/**
- * handleSpotify - Retrieves new Spotify data, updates global variables,
- * resets ticker offsets if text changes, and (if needed) updates the status image.
- * Call this function periodically (e.g. every few seconds) to fetch new data.
- */
 void handleSpotify() {
     // Get the latest Spotify info
     String currentArtist = sp.current_artist_names();
@@ -92,14 +45,12 @@ void handleSpotify() {
         lastArtist = currentArtist;
         Serial.println("Artist: " + lastArtist);
         updatedText = true;
-        artistScrollOffset = 0; // Reset ticker offset when new text arrives
     }
     // Update track if changed
     if (lastTrackName != currentTrackName && currentTrackName != "Something went wrong" && currentTrackName != "null") {
         lastTrackName = currentTrackName;
         Serial.println("Track: " + lastTrackName);
         updatedText = true;
-        trackScrollOffset = 0; // Reset ticker offset when new text arrives
     }
     // Update playing status if changed
     if (lastStatus != currentStatus) {
@@ -120,15 +71,6 @@ void handleSpotify() {
     lcd_PushColors(0, 0, 536, 240, (uint16_t *) sprite.getPointer());
 }
 
-/**
- * updateSpotifyTicker - Continuously updates the scrolling ticker.
- * Call this function frequently (e.g., in your main loop) so that the text scrolls smoothly.
- */
-void updateSpotifyTicker() {
-    drawSpotifyInfo();
-    lcd_PushColors(0, 0, 536, 240, (uint16_t *) sprite.getPointer());
-}
-
 void drawStatusImage() {
     // Draw the play/pause image in the right area of the main sprite
     if (sp.is_playing()) {
@@ -141,16 +83,47 @@ void drawStatusImage() {
 void drawSpotifyInfo() {
     // Clear and set up the text sub-sprite
     textSprite.fillSprite(TFT_BLACK);
-    textSprite.setTextSize(2);
     textSprite.setTextColor(TFT_WHITE, TFT_BLACK);
     textSprite.loadFont("Cubic_ecjns_f");
+    textSprite.setTextSize(2);
 
-    // Draw scrolling text for the artist and track names at specified positions
-    drawScrollingText(textSprite, lastArtist, 80, availableWidth, artistScrollOffset, lastScrollTimeArtist);
-    drawScrollingText(textSprite, lastTrackName, 140, availableWidth, trackScrollOffset, lastScrollTimeTrack);
+    // Calculate maximum width available for text (with margin)
+    const int maxWidth = availableWidth - 40;  // 20px margin on each side
+
+    // Handle artist text truncation
+    String displayArtist = lastArtist;
+    int artistWidth = textSprite.textWidth(displayArtist);
+    if (artistWidth > maxWidth) {
+        // Calculate width of ellipsis
+        int ellipsisWidth = textSprite.textWidth("...");
+
+        // Truncate text until it fits with ellipsis
+        while (artistWidth > maxWidth - ellipsisWidth && displayArtist.length() > 0) {
+            displayArtist = displayArtist.substring(0, displayArtist.length() - 1);
+            artistWidth = textSprite.textWidth(displayArtist);
+        }
+        displayArtist += "...";
+    }
+
+    // Handle track name truncation
+    String displayTrack = lastTrackName;
+    int trackWidth = textSprite.textWidth(displayTrack);
+    if (trackWidth > maxWidth) {
+        int ellipsisWidth = textSprite.textWidth("...");
+
+        while (trackWidth > maxWidth - ellipsisWidth && displayTrack.length() > 0) {
+            displayTrack = displayTrack.substring(0, displayTrack.length() - 1);
+            trackWidth = textSprite.textWidth(displayTrack);
+        }
+        displayTrack += "...";
+    }
+
+    // Draw the truncated text
+    textSprite.drawString(displayArtist, 20, 80);
+    textSprite.drawString(displayTrack, 20, 140);
 
     textSprite.unloadFont();
 
-    // Copy the text area into the main sprite at (0,0)
-    sprite.pushImage(0, 0, availableWidth, availableHeight, (uint16_t *) textSprite.getPointer());
+    // Copy text sprite to main sprite
+    sprite.pushImage(0, 0, availableWidth, availableHeight, (uint16_t*)textSprite.getPointer());
 }
