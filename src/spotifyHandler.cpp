@@ -4,7 +4,6 @@
 #include <custom_config.h>  // Should define SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REFRESH_TOKEN, TFT_WIDTH, TFT_HEIGHT
 
 
-
 // Global sub-sprite for text drawing (size: 286×240)
 TFT_eSprite textSprite = TFT_eSprite(&tft); // assuming your main display is "tft"
 
@@ -37,33 +36,29 @@ void handleSpotify() {
     String currentTrackName = sp.current_track_name();
     bool currentStatus = sp.is_playing();
 
-    bool updatedText = false;
-    bool updatedStatus = false;
+    bool updated = false;
 
     // Update artist if changed
     if (lastArtist != currentArtist && currentArtist != "Something went wrong" && !currentArtist.isEmpty()) {
         lastArtist = currentArtist;
         Serial.println("Artist: " + lastArtist);
-        updatedText = true;
+        updated = true;
     }
     // Update track if changed
     if (lastTrackName != currentTrackName && currentTrackName != "Something went wrong" && currentTrackName != "null") {
         lastTrackName = currentTrackName;
         Serial.println("Track: " + lastTrackName);
-        updatedText = true;
+        updated = true;
     }
     // Update playing status if changed
     if (lastStatus != currentStatus) {
         lastStatus = currentStatus;
         Serial.println("Status: " + String(lastStatus ? "Playing" : "Paused"));
-        updatedStatus = true;
+        updated = true;
     }
 
-    // Always update the scrolling text (even if text didn't change)
-    drawSpotifyInfo();
-
-    // Update the status image only when needed
-    if (updatedStatus) {
+    if (updated) {
+        drawSpotifyInfo();
         drawStatusImage();
     }
 
@@ -88,7 +83,7 @@ void drawSpotifyInfo() {
     textSprite.setTextSize(2);
 
     // Calculate maximum width available for text (with margin)
-    const int maxWidth = availableWidth - 40;  // 20px margin on each side
+    const int maxWidth = availableWidth - 40; // 20px margin on each side
 
     // Handle artist text truncation
     String displayArtist = lastArtist;
@@ -125,5 +120,5 @@ void drawSpotifyInfo() {
     textSprite.unloadFont();
 
     // Copy text sprite to main sprite
-    sprite.pushImage(0, 0, availableWidth, availableHeight, (uint16_t*)textSprite.getPointer());
+    sprite.pushImage(0, 0, availableWidth, availableHeight, (uint16_t *) textSprite.getPointer());
 }
