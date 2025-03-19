@@ -23,6 +23,7 @@ bool deb2 = false;
 bool lastButtonState = HIGH; // Assuming pull-up configuration
 unsigned long lastDebounceTime = 0;
 const unsigned long debounceDelay = 50; // Debounce time in ms
+static byte currentBrightnessIndex = 3; // Start with middle brightness (index 3 = value 180)
 
 // Task handle for button handling thread
 TaskHandle_t buttonTaskHandle = NULL;
@@ -31,6 +32,11 @@ void handleButtonPress() {
     if (digitalRead(21) == 0) {
         if (deb2 == 0) {
             deb2 = true;
+            ledON = !ledON;
+            digitalWrite(led, ledON);
+            currentBrightnessIndex = (currentBrightnessIndex + 1) % 7;
+            lcd_brightness(brightness[currentBrightnessIndex]);
+            delay(75);
             ledON = !ledON;
             digitalWrite(led, ledON);
         }
@@ -66,7 +72,7 @@ void setup() {
     sprite.createSprite(536, 240);
     sprite.setSwapBytes(true);
 
-    lcd_brightness(brightness[3]);
+    lcd_brightness(brightness[currentBrightnessIndex]);
 
     // Connect to Wi-Fi using the function from wifiConnect.cpp
     initWiFi();
