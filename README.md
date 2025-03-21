@@ -5,14 +5,15 @@ AMOLED display.
 
 ## Features
 
-- Wi-Fi connectivity with automatic configuration portal
+- Wi-Fi connectivity with automatic configuration portal and auto-reconnection
 - Spotify integration showing current artist and track
+- 7-level adjustable brightness control via hardware button
 - Custom font support
 
 ## Hardware Requirements
 
 - LilyGo T-Display S3 (ESP32-S3 with AMOLED display)
-- USB cable for programming
+- USB-C cable for programming
 
 ## Software Requirements
 
@@ -23,7 +24,6 @@ AMOLED display.
     - AsyncTCP
     - base64
     - TFT_eSPI
-    - SpotifyEsp32
 
 ## Setup
 
@@ -31,15 +31,27 @@ AMOLED display.
 
 2. **Create configuration file**:
     - Copy `src/__example_custom_config.h__` to `src/custom_config.h`
+   ```bash
+    cp src/__example_custom_config.h__ src/custom_config.h
+    ```
     - Add your Spotify API credentials
+
 
 3. **Create data directory**:
    ```bash
    mkdir data
    ```
 
-4. **Add font files to data directory** (if using custom fonts):
-    - Place your font files in the `data` directory
+4. **Add font files and convert images** (if using custom fonts):
+    - Font files:
+        - Place your font files in the data directory
+        - Create custom fonts at: https://vlw-font-creator.m5stack.com/
+        - User can use word.txt for reference when creating fonts
+    - Images to header files:
+        - Convert images to C header files using: https://github.com/lo2003058/Images2cHeader
+        - Store header files in src/images/ directory (recommended resolution: 240x240)
+        - Import in assetsImport.h to use in your application
+
 
 5. **Upload filesystem**:
    ```bash
@@ -69,14 +81,28 @@ this network and browse to the displayed IP address to configure your WiFi crede
 
 After setup, the device will:
 
-1. Connect to your WiFi network
+1. Connect to your Wi-Fi network
 2. Authenticate with Spotify
 3. Display currently playing track information
 
 The display updates automatically when a new song plays.
 
+### Demo Images
+Showing track information in multiple languages:
+![Traditional Chinese display](doc/images/IMG_3525.JPG)
+![English display](doc/images/IMG_3526.JPG)
+![Japanese display](doc/images/IMG_3527.JPG)
+
+Music playing/paused image changes:
+![Music playing](doc/images/IMG_3526.JPG)
+![Music paused](doc/images/IMG_3528.JPG)
+
+### Hardware Controls
+
+- Button on pin 21: Press to cycle through 7 brightness levels (100, 120, 140, 180, 200, 230, 254)
+- LED on pin 38: Flashes briefly when brightness is adjusted
+
 ## Troubleshooting
 
 - If SPIFFS doesn't initialize, ensure you've created a data directory and uploaded the filesystem
-- For WiFi connection issues, check the serial monitor for debugging information
 - If Spotify authentication fails, verify your API credentials in `custom_config.h`
