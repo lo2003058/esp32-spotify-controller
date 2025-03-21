@@ -10,6 +10,16 @@ AMOLED display.
 - 7-level adjustable brightness control via hardware button
 - Custom font support
 
+### Demo Images
+Showing track information in multiple languages:
+![Traditional Chinese display](doc/images/IMG_3525.JPG)
+![English display](doc/images/IMG_3526.JPG)
+![Japanese display](doc/images/IMG_3527.JPG)
+
+Music playing/paused image changes:
+![Music playing](doc/images/IMG_3526.JPG)
+![Music paused](doc/images/IMG_3528.JPG)
+
 ## Hardware Requirements
 
 - LilyGo T-Display S3 (ESP32-S3 with AMOLED display)
@@ -86,16 +96,6 @@ After setup, the device will:
 3. Display currently playing track information
 
 The display updates automatically when a new song plays.
-
-### Demo Images
-Showing track information in multiple languages:
-![Traditional Chinese display](doc/images/IMG_3525.JPG)
-![English display](doc/images/IMG_3526.JPG)
-![Japanese display](doc/images/IMG_3527.JPG)
-
-Music playing/paused image changes:
-![Music playing](doc/images/IMG_3526.JPG)
-![Music paused](doc/images/IMG_3528.JPG)
 
 ### Hardware Controls
 
